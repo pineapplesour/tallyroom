@@ -1,0 +1,18 @@
+{
+  "name": "tallyroom",
+  "version": "1.0.0",
+  "description": "A private money workbench your agent can use. The statement never leaves the tab; WebMCP lets the agent come to it.",
+  "license": "MIT",
+  "author": "pineapplesour",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "serve": "node tools/serve.mjs",
+    "verify": "node tools/verify.mjs",
+    "sample": "node tools/make-sample-data.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.0.0"
+  },
+  "comment": "The app itself has no runtime dependencies. It is plain ES modules and plain SVG, served as static files. playwright-core is only used by the headless verification script."
+}

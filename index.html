@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tallyroom — a private money workbench your agent can use</title>
+<meta name="description" content="Drop a bank or card statement into the tab. Nothing uploads. A WebMCP agent analyses it in place, and you watch every tool call it makes.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232a78d6'/%3E%3Cpath d='M8 21h4v-8H8zM14 21h4V9h-4zM20 21h4v-5h-4z' fill='white'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="./app.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" aria-hidden="true"></span>
+    <div>
+      <h1>Tallyroom</h1>
+      <p>Your statement stays in this tab. The agent comes to it.</p>
+    </div>
+  </div>
+
+  <div class="topbar-status">
+    <span id="webmcp-pill" class="pill pill-off">checking…</span>
+    <span id="egress" class="egress is-clean" title="Outbound traffic from this page"><strong>0</strong> bytes sent</span>
+  </div>
+
+  <div class="topbar-actions">
+    <button id="console-toggle" class="btn" aria-expanded="false" aria-controls="console-panel">Tool console</button>
+    <button id="undo-btn" class="btn" disabled>Undo</button>
+    <button id="reset-btn" class="btn" hidden>Clear</button>
+    <button id="theme-toggle" class="btn btn-icon" aria-label="Switch between light and dark">◐</button>
+  </div>
+</header>
+
+<p id="notice" class="notice" hidden></p>
+
+<!-- ------------------------------------------------------------------ -->
+<main id="empty" class="empty">
+  <section id="dropzone" class="dropzone">
+    <h2>Drop a bank or card statement here</h2>
+    <p class="drop-sub">CSV export from almost any bank. It is read in the browser and never sent anywhere — the counter in the header stays at zero.</p>
+    <div class="drop-actions">
+      <button id="pick-file" class="btn btn-primary">Choose a file</button>
+      <button id="load-sample" class="btn">Try the sample statement</button>
+    </div>
+    <input id="file-input" type="file" accept=".csv,text/csv,text/plain" multiple hidden>
+    <p class="drop-fine">
+      No account, no upload, no server. <button id="load-sample-krw" class="linkish">Load the Korean-format sample</button> to see the parser handle a different export shape, encoding and currency.
+    </p>
+  </section>
+
+  <section class="pitch">
+    <article>
+      <h3>The problem</h3>
+      <p>A cloud agent can only analyse your finances if you first hand your finances to the cloud. Most people, sensibly, will not do that.</p>
+    </article>
+    <article>
+      <h3>What WebMCP changes</h3>
+      <p>The page registers tools the agent can call. The data stays in the tab; only the questions and the answers cross the boundary.</p>
+    </article>
+    <article>
+      <h3>What that feels like</h3>
+      <p>You ask for the subscriptions you forgot about. It reads a thousand rows, filters your screen to the eight it found, and pins the total.</p>
+    </article>
+  </section>
+</main>
+
+<!-- ------------------------------------------------------------------ -->
+<main id="workspace" class="workspace" hidden>
+
+  <section id="board" class="board" hidden aria-label="Pinned insights"></section>
+
+  <section id="staged" class="staged" hidden aria-live="polite"></section>
+
+  <section class="controls" aria-label="Filters">
+    <input id="search" type="search" class="control control-search" placeholder="Search descriptions…" aria-label="Search descriptions">
+    <select id="category-filter" class="control" aria-label="Filter by category"></select>
+    <select id="account-filter" class="control" aria-label="Filter by account"></select>
+    <select id="flow-filter" class="control" aria-label="Money in or out">
+      <option value="all">In and out</option>
+      <option value="spend">Money out</option>
+      <option value="income">Money in</option>
+    </select>
+    <label class="control-date">from <input id="from-date" type="date" aria-label="From date"></label>
+    <label class="control-date">to <input id="to-date" type="date" aria-label="To date"></label>
+    <button id="clear-filters" class="btn btn-quiet" hidden>Clear filters</button>
+  </section>
+
+  <section class="charts">
+    <figure class="card chart-card">
+      <figcaption>
+        <h2 id="chart-a-title">Spending by category</h2>
+        <div class="chart-meta">
+          <span id="chart-a-total"></span>
+          <select id="groupby-filter" class="control control-inline" aria-label="Group the chart by">
+            <option value="category">by category</option>
+            <option value="merchant">by merchant</option>
+            <option value="account">by account</option>
+          </select>
+        </div>
+      </figcaption>
+      <div id="chart-a" class="chart"></div>
+    </figure>
+
+    <figure class="card chart-card">
+      <figcaption>
+        <h2 id="chart-b-title">Spending per month</h2>
+        <div class="chart-meta"><span id="chart-b-total"></span></div>
+      </figcaption>
+      <div id="chart-b" class="chart"></div>
+    </figure>
+  </section>
+
+  <p id="agent-message" class="agent-message" hidden aria-live="polite"></p>
+
+  <div class="lower">
+    <section class="card table-card">
+      <header class="card-head">
+        <h2>Transactions</h2>
+        <span id="table-count" class="muted"></span>
+      </header>
+      <div class="table-scroll">
+        <table class="txtable">
+          <thead>
+            <tr>
+              <th data-sort="date" scope="col">Date</th>
+              <th data-sort="merchant" scope="col">Description</th>
+              <th scope="col">Category</th>
+              <th scope="col">Account</th>
+              <th data-sort="amount" scope="col" class="c-amt">Amount</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <button id="show-more" class="btn btn-quiet show-more" hidden></button>
+    </section>
+
+    <aside id="activity-panel" class="card activity-card">
+      <header class="card-head">
+        <h2>Agent activity</h2>
+        <span id="activity-count" class="muted"></span>
+      </header>
+      <p class="activity-lead">Every tool call, in the order it happened. This is the whole audit trail — there is no path to your data that does not appear here.</p>
+      <div id="activity" class="activity"></div>
+    </aside>
+  </div>
+
+  <footer class="workspace-foot">
+    <button id="pick-file-2" class="btn btn-quiet">Add another file</button>
+    <button id="load-sample-2" class="btn btn-quiet">Load the sample statement</button>
+  </footer>
+</main>
+
+<!-- ------------------------------------------------------------------ -->
+<aside id="console-panel" class="console-panel" hidden aria-label="WebMCP tool console">
+  <header class="console-head">
+    <div>
+      <h2>Tool console</h2>
+      <p id="console-toolcount" class="muted"></p>
+    </div>
+    <button id="console-close" class="btn btn-icon" aria-label="Close the tool console">×</button>
+  </header>
+  <p class="console-lead">
+    This panel talks to the page through <code>document.modelContext.getTools()</code> and
+    <code>executeTool()</code> — the same mediated path a browser agent uses. What you see below is
+    literally what a model is handed.
+  </p>
+  <div class="console-body">
+    <nav id="console-list" class="console-list" aria-label="Registered tools"></nav>
+    <div class="console-main">
+      <div id="console-detail" class="console-detail"></div>
+      <label class="console-label" for="console-args">arguments (JSON)</label>
+      <textarea id="console-args" class="console-args" spellcheck="false" rows="8"></textarea>
+      <button id="console-run" class="btn btn-primary">Run tool <span class="kbd">⌘⏎</span></button>
+      <pre id="console-result" class="console-result"></pre>
+    </div>
+  </div>
+</aside>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
