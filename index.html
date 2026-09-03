@@ -7,6 +7,12 @@
 <meta name="description" content="Drop a bank or card statement into the tab. Nothing uploads. A WebMCP agent analyses it in place, and you watch every tool call it makes.">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232a78d6'/%3E%3Cpath d='M8 21h4v-8H8zM14 21h4V9h-4zM20 21h4v-5h-4z' fill='white'/%3E%3C/svg%3E">
+<meta property="og:title" content="Tallyroom — a private money workbench your agent can use">
+<meta property="og:description" content="Your bank statement never leaves the browser tab. WebMCP lets the agent come to your data instead of the other way round.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pineapplesour.github.io/tallyroom/">
+<meta property="og:image" content="https://pineapplesour.github.io/tallyroom/docs/shot-light.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="./app.css">
 </head>
 <body>
@@ -50,6 +56,17 @@
     </p>
   </section>
 
+  <section class="prompts prompts-empty">
+    <h3>Once it is loaded, ask your agent</h3>
+    <ul class="prompt-list">
+      <li><button class="prompt" type="button">What am I still paying for every month, and did any of them go up?</button></li>
+      <li><button class="prompt" type="button">Categorise the merchants I haven't categorised yet.</button></li>
+      <li><button class="prompt" type="button">Anything in here worth a second look?</button></li>
+      <li><button class="prompt" type="button">Where did my money actually go in May, and how does that compare to a normal month?</button></li>
+    </ul>
+    <p class="prompt-fine">In a browser without WebMCP, open the <strong>Tool console</strong> instead — it runs the same tools through <code>document.modelContext.executeTool()</code>.</p>
+  </section>
+
   <section class="pitch">
     <article>
       <h3>The problem</h3>
@@ -72,6 +89,16 @@
   <section id="board" class="board" hidden aria-label="Pinned insights"></section>
 
   <section id="staged" class="staged" hidden aria-live="polite"></section>
+
+  <details id="prompts-ws" class="prompts prompts-ws">
+    <summary>Things to ask your agent</summary>
+    <ul class="prompt-list">
+      <li><button class="prompt" type="button">What am I still paying for every month, and did any of them go up?</button></li>
+      <li><button class="prompt" type="button">Categorise the merchants I haven't categorised yet.</button></li>
+      <li><button class="prompt" type="button">Anything in here worth a second look?</button></li>
+      <li><button class="prompt" type="button">Where did my money actually go in May, and how does that compare to a normal month?</button></li>
+    </ul>
+  </details>
 
   <section class="controls" aria-label="Filters">
     <input id="search" type="search" class="control control-search" placeholder="Search descriptions…" aria-label="Search descriptions">

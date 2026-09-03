@@ -87,6 +87,24 @@ function wireLoading() {
 }
 
 // ---------------------------------------------------------------------------
+// Suggested prompts
+// ---------------------------------------------------------------------------
+
+/** Clicking a suggestion copies it, so it can be pasted straight into an agent. */
+function wirePrompts() {
+  for (const btn of document.querySelectorAll(".prompt")) {
+    btn.addEventListener("click", async () => {
+      const text = btn.textContent.trim();
+      try { await navigator.clipboard.writeText(text); } catch { /* no clipboard permission */ }
+      const previous = btn.textContent;
+      btn.classList.add("is-copied");
+      btn.textContent = "copied — paste it to your agent";
+      setTimeout(() => { btn.textContent = previous; btn.classList.remove("is-copied"); }, 1600);
+    });
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Theme
 // ---------------------------------------------------------------------------
 
@@ -126,6 +144,7 @@ async function boot() {
   wireControls();
   wireLoading();
   wireTheme();
+  wirePrompts();
   initConsole();
   render();
 

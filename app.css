@@ -176,6 +176,34 @@ code { font-family: var(--mono); font-size: 0.92em; }
 .pitch h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 8px; }
 .pitch p { color: var(--ink-2); font-size: 13.5px; }
 
+/* ---------------------------------------------- prompt suggestions */
+.prompts { margin-top: 28px; }
+.prompts h3, .prompts summary {
+  font-size: 12px; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); font-weight: 600;
+}
+.prompts-ws {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px 16px; margin: 0 0 16px;
+}
+.prompts-ws summary { cursor: pointer; list-style: none; }
+.prompts-ws summary::-webkit-details-marker { display: none; }
+.prompts-ws summary::before { content: "▸ "; color: var(--muted); }
+.prompts-ws[open] summary::before { content: "▾ "; }
+.prompt-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
+.prompt {
+  width: 100%; text-align: left; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface); color: var(--ink-2);
+  border-radius: 9px; padding: 10px 13px; font-size: 13px; line-height: 1.45;
+  transition: border-color .12s ease, color .12s ease, background .12s ease;
+}
+.prompt::before { content: "\201C"; color: var(--muted); }
+.prompt::after  { content: "\201D"; color: var(--muted); }
+.prompt:hover { border-color: var(--series-1); color: var(--ink); background: var(--surface-2); }
+.prompt.is-copied { border-color: var(--good); color: var(--success-ink); }
+.prompt-fine { margin-top: 10px; font-size: 12px; color: var(--muted); }
+.prompts-empty { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+
 /* ---------------------------------------------- workspace */
 .workspace { max-width: 1360px; margin: 0 auto; padding: 20px 22px 60px; }
 .card {
