@@ -39,8 +39,11 @@ MIT licence, detectable in the repository's About panel.
 ## Demo video
 
 ```
-[ YouTube URL — under 3 minutes, public, with audio narration ]
+[ YouTube URL — paste after uploading ]
 ```
+
+The finished file is `~/tallyroom-video/tallyroom-demo.mp4` (2:45, 1920×1080,
+15.4 MB) with `narration.srt` as its caption track. See [VIDEO.md](VIDEO.md).
 
 ## Built with
 
